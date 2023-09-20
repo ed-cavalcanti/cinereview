@@ -1,4 +1,5 @@
 import 'package:cinereview/app.dart';
+import 'package:cinereview/app/data/repositories/characters_repository.dart';
 import 'package:cinereview/app/data/repositories/reviews_repository.dart';
 import 'package:cinereview/app/data/repositories/users_repository.dart';
 import 'package:cinereview/app/services/auth_service.dart';
@@ -30,6 +31,11 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ReviewsRepository(
+            auth: context.read<AuthService>(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CharactersRepository(
             auth: context.read<AuthService>(),
           ),
         )

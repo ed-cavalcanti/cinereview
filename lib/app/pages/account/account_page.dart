@@ -65,6 +65,12 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
+  Future<void> excluirUsuario() async {
+    await UsersRepository(
+      auth: context.read<AuthService>(),
+    ).excluirUsuario();
+  }
+
   void goToHome() {
     Navigator.popAndPushNamed(context, '/home');
   }
@@ -119,7 +125,80 @@ class _AccountPageState extends State<AccountPage> {
                 label: 'Salvar informações',
                 onPressed: updateInfo,
               ),
-              Container(height: 260),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.2,
+              ),
+              OutlinedButton(
+                style: ButtonStyle(
+                  side: MaterialStateProperty.resolveWith<BorderSide>(
+                    (states) {
+                      return const BorderSide(
+                        color: ProjectColors.orange,
+                        width: 1.5,
+                      );
+                    },
+                  ),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                  width: double.infinity,
+                  height: 56,
+                  child: const Text(
+                    'Excluir conta?',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                      color: ProjectColors.orange,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    barrierDismissible: false, // user must tap button!
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        // <-- SEE HERE
+                        title: const Text('Excluir conta?'),
+                        content: const SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text(
+                                  'Você tem certeza que deseja excluir sua conta?'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            child: const Text('Não'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('Sim'),
+                            onPressed: () async {
+                              await excluirUsuario();
+                              if (context.mounted) {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  '/',
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(
+                height: 8.0,
+              ),
               OutlinedButton(
                 onPressed: logout,
                 style: ButtonStyle(
@@ -150,7 +229,7 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ),
       ),
-      bottomNavigationBar: NavBar(context, 3),
+      bottomNavigationBar: NavBar(context, 4),
     );
   }
 }

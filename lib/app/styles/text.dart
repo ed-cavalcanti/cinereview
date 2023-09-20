@@ -17,6 +17,13 @@ class ProjectText {
     fontWeight: FontWeight.w500,
   );
 
+  static const TextStyle regular16 = TextStyle(
+    color: Colors.white,
+    fontFamily: fontName,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+  );
+
   static const TextStyle bold = TextStyle(
     color: Colors.white,
     fontFamily: fontName,
@@ -29,6 +36,13 @@ class ProjectText {
     fontFamily: fontName,
     color: Colors.white70,
     fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle bold24 = TextStyle(
+    fontSize: 24,
+    fontFamily: fontName,
+    color: Colors.white,
+    fontWeight: FontWeight.w900,
   );
 
   static const TextStyle boldUnderline = TextStyle(

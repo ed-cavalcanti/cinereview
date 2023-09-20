@@ -21,9 +21,13 @@ class NavBar extends StatelessWidget {
         }
       case 2:
         {
-          Navigator.pushNamed(_context, '/reviews');
+          Navigator.pushNamed(_context, '/characters');
         }
       case 3:
+        {
+          Navigator.pushNamed(_context, '/reviews');
+        }
+      case 4:
         {
           Navigator.pushNamed(_context, '/account');
         }
@@ -55,6 +59,15 @@ class NavBar extends StatelessWidget {
             label: 'Favoritos',
             selectedIcon: GradientIcon(
               PhosphorIcons.heart_fill,
+              24,
+              ProjectColors.primaryGradient,
+            ),
+          ),
+          NavigationDestination(
+            icon: Icon(PhosphorIcons.star_four),
+            label: 'Personagens',
+            selectedIcon: GradientIcon(
+              PhosphorIcons.star_four_fill,
               24,
               ProjectColors.primaryGradient,
             ),

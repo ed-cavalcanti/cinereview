@@ -39,6 +39,22 @@ class UsersRepository extends ChangeNotifier {
     }
   }
 
+  Future<void> excluirUsuario() async {
+    try {
+      var user = auth.user;
+      if (user != null) {
+        var userUid = user.uid;
+        await user.delete().then((value) async {
+          await db.collection("users").doc(userUid).delete();
+        });
+      } else {
+        debugPrint("Você precisa estar autenticado para excluir um usuário.");
+      }
+    } catch (e) {
+      debugPrint("Erro ao excluir o usuário: $e");
+    }
+  }
+
   Future<void> saveInfo(UsersInfo newInfo) async {
     await db
         .collection('users/${auth.user!.uid}/info')
@@ -60,8 +76,12 @@ class UsersRepository extends ChangeNotifier {
         db.doc('users/${auth.user!.uid}/favorites/${auth.user!.uid}');
 
     final DocumentSnapshot snapshot = await document.get();
-    final data = snapshot.data() as Map<String, dynamic>;
-    final List<dynamic> favorites = data['favorites'];
+    final data = snapshot.data();
+    List<dynamic> favorites = [];
+
+    if (data != null && data is Map<String, dynamic>) {
+      favorites = data['favorites'];
+    }
 
     final isFavorited =
         favorites.firstWhere((movie) => movie == movieId, orElse: () => false);
@@ -77,21 +97,26 @@ class UsersRepository extends ChangeNotifier {
     final DocumentReference document =
         db.doc('users/${auth.user!.uid}/favorites/${auth.user!.uid}');
 
-    final DocumentSnapshot snapshot = await document.get();
-    final data = snapshot.data() as Map<String, dynamic>;
-    final List<dynamic> favorites = data['favorites'];
+    try {
+      final DocumentSnapshot snapshot = await document.get();
+      final data = snapshot.data();
+      List<dynamic> favorites = [];
 
-    final isFavorited =
-        favorites.firstWhere((movie) => movie == movieId, orElse: () => false);
+      if (data != null && data is Map<String, dynamic>) {
+        if (data.containsKey('favorites')) {
+          favorites = List.from(data['favorites']);
+        }
+      }
 
-    if (isFavorited == false) {
-      document.update({
-        'favorites': FieldValue.arrayUnion([movieId])
-      });
-    } else {
-      document.update({
-        'favorites': FieldValue.arrayRemove([movieId])
-      });
+      if (!favorites.contains(movieId)) {
+        favorites.add(movieId);
+      } else {
+        favorites.remove(movieId);
+      }
+
+      await document.set({'favorites': favorites}, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint("Error: $e");
     }
   }
 
@@ -100,8 +125,12 @@ class UsersRepository extends ChangeNotifier {
         db.doc('users/${auth.user!.uid}/favorites/${auth.user!.uid}');
 
     final DocumentSnapshot snapshot = await document.get();
-    final data = snapshot.data() as Map<String, dynamic>;
-    final List<dynamic> favorites = data['favorites'];
+    final data = snapshot.data();
+    List<dynamic> favorites = [];
+
+    if (data != null && data is Map<String, dynamic>) {
+      favorites = data['favorites'];
+    }
 
     return favorites;
   }
